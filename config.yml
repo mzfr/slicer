@@ -1,0 +1,22 @@
+# use grep or ripgrep for searching
+cmd: "grep"
+
+# These are some checks that slicer performs automatically.
+checks:
+    # Checks if the .json is allowed on firebase.
+    firebase: "true"
+    # See if the Google maps API keys publically accesible or not.
+    Gmaps: "true"
+
+# These are the regex patterns that you can modify.
+patterns:
+    URLS: 
+        - regex: "https?://[^\"\\'> ]+"
+        - flags: "-oriahE"
+    AwsKeys: 
+        - regex: "([^A-Z0-9]|^)(AKIA|A3T|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{12,}"
+        - flags: "-HanrE"
+    firebaseURL: 
+        - regex: "*.firebaseio.com"
+        - flags: "-Hnri"
+
