@@ -57,3 +57,55 @@ func ConfigReader() (*viper.Viper, error) {
 
 	return v, err
 }
+
+func main() {
+	var dir string
+	flag.StringVar(&dir, "dir", "", "")
+	flag.StringVar(&dir, "d", "", "")
+
+	flag.Parse()
+
+	myFigure := figure.NewColorFigure("Slicer", "big", "green", true)
+	myFigure.Print()
+
+	v, err := ConfigReader()
+	if err != nil {
+		fmt.Printf("Unable to decode into struct, %v", err)
+	}
+	patterns := v.Get("patterns")
+	fmt.Println(patterns)
+
+	// firebase := v.GetBool("checks.firebase")
+	// gmap := v.GetBool("checks.gmaps")
+
+	// fmt.Println(firebase, gmap)
+
+	if dir != "" {
+		fmt.Printf("Searching path: %s", dir)
+
+		var files []string
+		err := filepath.Walk(dir, visit(&files))
+		if err != nil {
+			panic(err)
+		}
+		// fmt.Println(files)
+
+		var cmd *exec.Cmd
+
+		for _, key := range patterns.(map[string]interface{}) {
+			k := key.([]interface{})
+			command := fmt.Sprintf("%v %v", k[1], k[0])
+			// path := filepath.Join(dir, "*.*")
+			for _, f := range files {
+				// fmt.Println(f)
+				cmd = exec.Command("grep", command, f)
+				cmd.Stdin = os.Stdin
+				cmd.Stdout = os.Stdout
+				// cmd.Stderr = os.Stderr
+				cmd.Run()
+			}
+
+		}
+
+	}
+}
