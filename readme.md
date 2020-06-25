@@ -21,3 +21,11 @@ The things that I have in mind right now are:
 
 
 The 3rd point looks like a work of drozer but if we can do this then I think we won't have to depend on drozer at all. Also having all this automated would really save loads of time
+
+## Implementation method
+
+1) Keep the config for the yaml, in that we can store the path of the files to be searched or the keywords that we are going to search.
+Also all the regex that has to be searched etc.
+
+2) Add a XML parser
+3) In main do all the checks and stuff.
