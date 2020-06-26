@@ -59,6 +59,32 @@ func ConfigReader() (*viper.Viper, error) {
 	return v, err
 }
 
+func exported(activity *etree.Element) {
+	// Choose all those activity which are exported
+	// If not exported then we check if the intent-filters are set
+	exported := activity.SelectAttrValue("android:exported", "none")
+
+	if exported == "none" {
+		// If the activity doesn't have android:exported defined
+		// we check if it has any Intent-filerts, if yes that means
+		// exported by default
+		if intentFilter := activity.SelectElements("intent-filter"); intentFilter != nil {
+			fmt.Println("Activity Name:", activity.SelectAttrValue("android:name", "name not defined"))
+			// TODO: Null has to be printed in red.
+			fmt.Println("Permission:", activity.SelectAttrValue("android:permission", "null"))
+			getIntents(intentFilter)
+		}
+	} else if exported == "true" {
+		if intentFilter := activity.SelectElements("intent-filter"); intentFilter != nil {
+			fmt.Println("Activity Name:", activity.SelectAttrValue("android:name", "name not defined"))
+			// TODO: Null has to be printed in red.
+			fmt.Println("Permission:", activity.SelectAttrValue("android:permission", "null"))
+
+			getIntents(intentFilter)
+		}
+	}
+}
+
 func parseManifest(document *etree.Document) {
 	root := document.SelectElement("manifest")
 	for _, app := range root.SelectElements("application") {
