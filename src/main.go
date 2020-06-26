@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -57,6 +56,24 @@ func ConfigReader() (*viper.Viper, error) {
 	err := v.Unmarshal(&configuration)
 
 	return v, err
+}
+
+func getIntents(intentFilters []*etree.Element) {
+	var formatedIntent string
+	for _, intents := range intentFilters {
+		fmt.Println("Intent-filters")
+		for _, Type := range intents.ChildElements() {
+			if Type.Tag == "data" {
+				host := Type.SelectAttrValue("android:host", "*")
+				scheme := Type.SelectAttrValue("android:scheme", "*")
+				formatedIntent = fmt.Sprintf("\t - %s: %s://%s", Type.Tag, scheme, host)
+
+			} else {
+				formatedIntent = fmt.Sprintf("\t - %s: %s", Type.Tag, Type.SelectAttrValue("android:name", "no name"))
+			}
+			fmt.Println(formatedIntent)
+		}
+	}
 }
 
 func exported(activity *etree.Element) {
