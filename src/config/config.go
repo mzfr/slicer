@@ -2,15 +2,14 @@ package config
 
 // Configurations exported
 type Configurations struct {
-	cmd      string
-	checks   ChecksConfiguration
+	paths    PathsConfiguration
 	patterns PatternConfiguration
 }
 
-// ChecksConfiguration exported
-type ChecksConfiguration struct {
-	firebase bool
-	gmap     bool
+// PathsConfiguration exported
+type PathsConfiguration struct {
+	manifest string
+	strings  string
 }
 
 // PatternConfiguration exported
