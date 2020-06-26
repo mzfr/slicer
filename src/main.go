@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	conf "./config"
+	"github.com/beevik/etree"
 	"github.com/common-nighthawk/go-figure"
 	"github.com/spf13/viper"
 )
@@ -56,6 +57,24 @@ func ConfigReader() (*viper.Viper, error) {
 	err := v.Unmarshal(&configuration)
 
 	return v, err
+}
+
+func parseManifest(document *etree.Document) {
+	root := document.SelectElement("manifest")
+	for _, app := range root.SelectElements("application") {
+		// Check if the backup is allowed or not
+		backup := app.SelectAttrValue("android:allowBackup", "true")
+		fmt.Println("Backup allowed? ", backup)
+
+		//Check if the app is set debuggable
+		debuggable := app.SelectAttrValue("android:debuggable", "false")
+		fmt.Println("Debuggable? ", debuggable)
+		fmt.Println()
+		// Select all the activities
+		for _, activity := range app.SelectElements("activity") {
+			exported(activity)
+		}
+	}
 }
 
 func main() {
