@@ -72,40 +72,18 @@ func main() {
 	if err != nil {
 		fmt.Printf("Unable to decode into struct, %v", err)
 	}
-	patterns := v.Get("patterns")
-	fmt.Println(patterns)
+	paths := v.Get("paths")
 
-	// firebase := v.GetBool("checks.firebase")
-	// gmap := v.GetBool("checks.gmaps")
-
-	// fmt.Println(firebase, gmap)
-
-	if dir != "" {
-		fmt.Printf("Searching path: %s", dir)
-
-		var files []string
-		err := filepath.Walk(dir, visit(&files))
-		if err != nil {
-			panic(err)
-		}
-		// fmt.Println(files)
-
-		var cmd *exec.Cmd
-
-		for _, key := range patterns.(map[string]interface{}) {
-			k := key.([]interface{})
-			command := fmt.Sprintf("%v %v", k[1], k[0])
-			// path := filepath.Join(dir, "*.*")
-			for _, f := range files {
-				// fmt.Println(f)
-				cmd = exec.Command("grep", command, f)
-				cmd.Stdin = os.Stdin
-				cmd.Stdout = os.Stdout
-				// cmd.Stderr = os.Stderr
-				cmd.Run()
+	for _, key := range paths.([]interface{}) {
+		for _, file := range key.(map[interface{}]interface{}) {
+			filePath := fmt.Sprintf("%s/%s", dir, file)
+			doc := etree.NewDocument()
+			if err := doc.ReadFromFile(filePath); err != nil {
+				panic(err)
 			}
-
+			if err := doc.SelectElement("manifest"); err != nil {
+				parseManifest(doc)
+			}
 		}
-
 	}
 }
