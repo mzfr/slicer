@@ -63,15 +63,15 @@ func ConfigReader() (*viper.Viper, error) {
 func getIntents(intentFilters []*etree.Element) {
 	var formatedIntent string
 	for _, intents := range intentFilters {
-		fmt.Println("Intent filters")
+		fmt.Println("\tIntent filters")
 		for _, Type := range intents.ChildElements() {
 			if Type.Tag == "data" {
 				host := Type.SelectAttrValue("android:host", "*")
 				scheme := Type.SelectAttrValue("android:scheme", "*")
-				formatedIntent = fmt.Sprintf("\t - %s: %s://%s", Type.Tag, scheme, host)
+				formatedIntent = fmt.Sprintf("\t\t - %s: %s://%s", Type.Tag, scheme, host)
 
 			} else {
-				formatedIntent = fmt.Sprintf("\t - %s: %s", Type.Tag, Type.SelectAttrValue("android:name", "no name"))
+				formatedIntent = fmt.Sprintf("\t\t - %s: %s", Type.Tag, Type.SelectAttrValue("android:name", "no name"))
 			}
 			fmt.Println(formatedIntent)
 		}
@@ -88,16 +88,16 @@ func exported(component *etree.Element) {
 		// we check if it has any Intent-filerts, if yes that means
 		// exported by default
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
-			fmt.Printf("\n%v name:\n\t- %s", component.Tag, component.SelectAttrValue("android:name", "name not defined"))
+			fmt.Printf("\n- %s", component.SelectAttrValue("android:name", "name not defined"))
 			// TODO: Null has to be printed in red.
-			fmt.Println("\nPermission:", component.SelectAttrValue("android:permission", "null"))
+			fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
-			fmt.Printf("\n%v name: %s", component.Tag, component.SelectAttrValue("android:name", "name not defined"))
+			fmt.Printf("\n- %s", component.SelectAttrValue("android:name", "name not defined"))
 			// TODO: Null has to be printed in red.
-			fmt.Println("\nPermission:", component.SelectAttrValue("android:permission", "null"))
+			fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
 
 			getIntents(intentFilter)
 		}
