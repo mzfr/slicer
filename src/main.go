@@ -58,6 +58,8 @@ func ConfigReader() (*viper.Viper, error) {
 	return v, err
 }
 
+//Get Intents of all those activites which are either
+// exported or have some intent filters defined
 func getIntents(intentFilters []*etree.Element) {
 	var formatedIntent string
 	for _, intents := range intentFilters {
@@ -77,9 +79,9 @@ func getIntents(intentFilters []*etree.Element) {
 }
 
 func exported(activity *etree.Element) {
-	// Choose all those activity which are exported
-	// If not exported then we check if the intent-filters are set
 	exported := activity.SelectAttrValue("android:exported", "none")
+// Check all the activities, receivers, broadcasts, if they are exported.
+// If not exported then we check if the intent-filters are set
 
 	if exported == "none" {
 		// If the activity doesn't have android:exported defined
@@ -113,7 +115,6 @@ func parseManifest(document *etree.Document) {
 		debuggable := app.SelectAttrValue("android:debuggable", "false")
 		fmt.Println("Debuggable? ", debuggable)
 		fmt.Println()
-		// Select all the activities
 		for _, activity := range app.SelectElements("activity") {
 			exported(activity)
 		}
