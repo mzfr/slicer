@@ -63,7 +63,7 @@ func ConfigReader() (*viper.Viper, error) {
 func getIntents(intentFilters []*etree.Element) {
 	var formatedIntent string
 	for _, intents := range intentFilters {
-		fmt.Println("Intent-filters")
+		fmt.Println("Intent filters")
 		for _, Type := range intents.ChildElements() {
 			if Type.Tag == "data" {
 				host := Type.SelectAttrValue("android:host", "*")
@@ -78,26 +78,26 @@ func getIntents(intentFilters []*etree.Element) {
 	}
 }
 
-func exported(activity *etree.Element) {
-	exported := activity.SelectAttrValue("android:exported", "none")
 // Check all the activities, receivers, broadcasts, if they are exported.
 // If not exported then we check if the intent-filters are set
+func exported(component *etree.Element) {
+	exported := component.SelectAttrValue("android:exported", "none")
 
 	if exported == "none" {
 		// If the activity doesn't have android:exported defined
 		// we check if it has any Intent-filerts, if yes that means
 		// exported by default
-		if intentFilter := activity.SelectElements("intent-filter"); intentFilter != nil {
-			fmt.Println("Activity Name:", activity.SelectAttrValue("android:name", "name not defined"))
+		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
+			fmt.Printf("\n%v name:\n\t- %s", component.Tag, component.SelectAttrValue("android:name", "name not defined"))
 			// TODO: Null has to be printed in red.
-			fmt.Println("Permission:", activity.SelectAttrValue("android:permission", "null"))
+			fmt.Println("\nPermission:", component.SelectAttrValue("android:permission", "null"))
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
-		if intentFilter := activity.SelectElements("intent-filter"); intentFilter != nil {
-			fmt.Println("Activity Name:", activity.SelectAttrValue("android:name", "name not defined"))
+		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
+			fmt.Printf("\n%v name: %s", component.Tag, component.SelectAttrValue("android:name", "name not defined"))
 			// TODO: Null has to be printed in red.
-			fmt.Println("Permission:", activity.SelectAttrValue("android:permission", "null"))
+			fmt.Println("\nPermission:", component.SelectAttrValue("android:permission", "null"))
 
 			getIntents(intentFilter)
 		}
@@ -114,9 +114,12 @@ func parseManifest(document *etree.Document) {
 		//Check if the app is set debuggable
 		debuggable := app.SelectAttrValue("android:debuggable", "false")
 		fmt.Println("Debuggable? ", debuggable)
-		fmt.Println()
-		for _, activity := range app.SelectElements("activity") {
-			exported(activity)
+
+		var attackSurface = []string{"activity", "receiver", "content", "service"}
+		for _, com := range attackSurface {
+			for _, components := range app.SelectElements(com) {
+				exported(components)
+			}
 		}
 	}
 }
