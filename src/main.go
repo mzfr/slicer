@@ -104,6 +104,7 @@ func exported(component *etree.Element) {
 	}
 }
 
+// Parse the AndroidManifest.xml file
 func parseManifest(document *etree.Document) {
 	root := document.SelectElement("manifest")
 	for _, app := range root.SelectElements("application") {
@@ -117,9 +118,27 @@ func parseManifest(document *etree.Document) {
 
 		var attackSurface = []string{"activity", "receiver", "content", "service"}
 		for _, com := range attackSurface {
+			fmt.Printf("\n------%s------\n", com)
 			for _, components := range app.SelectElements(com) {
 				exported(components)
 			}
+		}
+	}
+}
+
+// Parse the /res/values/strings.xml
+func parseStrings(document *etree.Document) {
+	root := document.SelectElement("resources")
+
+	for _, str := range root.SelectElements("string") {
+		strValues := str.SelectAttrValue("name", "none")
+		if strValues == "firebase_database_url" {
+			fmt.Print(str.Text())
+			fmt.Print("\n")
+		}
+
+		if strings.Contains(strings.ToLower(strValues), "api") {
+			fmt.Printf("%s - %s\n", strValues, str.Text())
 		}
 	}
 }
@@ -149,6 +168,9 @@ func main() {
 			}
 			if err := doc.SelectElement("manifest"); err != nil {
 				parseManifest(doc)
+			} else {
+				fmt.Printf("\n------%s------\n", "Strings")
+				parseStrings(doc)
 			}
 		}
 	}
