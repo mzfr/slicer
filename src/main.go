@@ -4,8 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	conf "./config"
@@ -21,6 +23,7 @@ func init() {
 			"",
 			"Options:",
 			"  -d, --dir <path>       path to jadx output directory",
+			"  -o, --output <filename>  Name of the output file",
 			"",
 		}
 
@@ -116,7 +119,7 @@ func parseManifest(document *etree.Document) {
 		debuggable := app.SelectAttrValue("android:debuggable", "false")
 		fmt.Println("Debuggable? ", debuggable)
 
-		var attackSurface = []string{"activity", "receiver", "content", "service"}
+		var attackSurface = []string{"activity", "receiver", "service"}
 		for _, com := range attackSurface {
 			fmt.Printf("\n------%s------\n", com)
 			for _, components := range app.SelectElements(com) {
@@ -133,11 +136,28 @@ func parseStrings(document *etree.Document) {
 	for _, str := range root.SelectElements("string") {
 		strValues := str.SelectAttrValue("name", "none")
 		if strValues == "firebase_database_url" {
-			fmt.Print(str.Text())
-			fmt.Print("\n")
-		}
+			firebaseURL := fmt.Sprintf("%s/.json", str.Text())
+			req, err := http.Get(firebaseURL)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "failed to connect with firebase DB: %s\n", err)
+			}
 
+			defer req.Body.Close()
+
+			if req.StatusCode == 401 {
+				fmt.Printf("%s is not publiclly accesible", firebaseURL)
+				fmt.Println()
+			}
+		}
+		// if strValues == "google_api_key" || strValues == "google_map_keys" {
+		// 	for _, keys := range googleURL {
+		// 		fmt.Print(keys)
+		// 	}
+		// }
 		if strings.Contains(strings.ToLower(strValues), "api") {
+			if strValues == "abc_capital_off" || strValues == "abc_capital_on" || strValues == "currentApiLevel" {
+				continue
+			}
 			fmt.Printf("%s - %s\n", strValues, str.Text())
 		}
 	}
@@ -158,6 +178,8 @@ func main() {
 		fmt.Printf("Unable to decode into struct, %v", err)
 	}
 	paths := v.Get("paths")
+	gURL := v.Get("URLs")
+	fmt.Println(reflect.TypeOf(gURL))
 
 	for _, key := range paths.([]interface{}) {
 		for _, file := range key.(map[interface{}]interface{}) {
