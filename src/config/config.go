@@ -2,8 +2,8 @@ package config
 
 // Configurations exported
 type Configurations struct {
-	paths    PathsConfiguration
-	patterns PatternConfiguration
+	paths PathsConfiguration
+	URLs  URLConfiguration
 }
 
 // PathsConfiguration exported
@@ -12,11 +12,11 @@ type PathsConfiguration struct {
 	strings  string
 }
 
-// PatternConfiguration exported
-type PatternConfiguration struct {
-	// TODO: Add pattern for general API and google map API key
-	URLS       string
-	AwsKeys    string
-	firbaseURL string
-	google     string
+// URLConfiguration exported
+type URLConfiguration struct {
+	maps       string
+	streetview string
+	directions string
+	places     string
+	geocoding  string
 }
