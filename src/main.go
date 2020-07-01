@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 
 	conf "./config"
@@ -130,7 +129,7 @@ func parseManifest(document *etree.Document) {
 }
 
 // Parse the /res/values/strings.xml
-func parseStrings(document *etree.Document) {
+func parseStrings(document *etree.Document, googleURL interface{}) {
 	root := document.SelectElement("resources")
 
 	for _, str := range root.SelectElements("string") {
@@ -149,11 +148,20 @@ func parseStrings(document *etree.Document) {
 				fmt.Println()
 			}
 		}
-		// if strValues == "google_api_key" || strValues == "google_map_keys" {
-		// 	for _, keys := range googleURL {
-		// 		fmt.Print(keys)
-		// 	}
-		// }
+		if strValues == "google_api_key" || strValues == "google_map_keys" {
+			for _, keys := range googleURL.([]interface{}) {
+				for _, values := range keys.(map[interface{}]interface{}) {
+					requestURL := fmt.Sprintf("%s%s", values, str.Text())
+
+					req, err := http.Get(requestURL)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "failed to connect with firebase DB: %s\n", err)
+					}
+
+					defer req.Body.Close()
+				}
+			}
+		}
 		if strings.Contains(strings.ToLower(strValues), "api") {
 			if strValues == "abc_capital_off" || strValues == "abc_capital_on" || strValues == "currentApiLevel" {
 				continue
@@ -179,7 +187,7 @@ func main() {
 	}
 	paths := v.Get("paths")
 	gURL := v.Get("URLs")
-	fmt.Println(reflect.TypeOf(gURL))
+	// fmt.Println(reflect.TypeOf(gURL))
 
 	for _, key := range paths.([]interface{}) {
 		for _, file := range key.(map[interface{}]interface{}) {
@@ -192,7 +200,7 @@ func main() {
 				parseManifest(doc)
 			} else {
 				fmt.Printf("\n------%s------\n", "Strings")
-				parseStrings(doc)
+				parseStrings(doc, gURL)
 			}
 		}
 	}
