@@ -159,6 +159,10 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 					}
 
 					defer req.Body.Close()
+
+					if req.StatusCode != 403 {
+						fmt.Printf("\n%s returns %d", requestURL, req.StatusCode)
+					}
 				}
 			}
 		}
