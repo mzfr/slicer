@@ -21,8 +21,8 @@ func init() {
 			"Extract information from the APK file",
 			"",
 			"Options:",
-			"  -d, --dir <path>       path to jadx output directory",
-			"  -o, --output <filename>  Name of the output file",
+			"  -d, --dir		path to jadx output directory",
+			"  -o, --output		Name of the output file",
 			"",
 		}
 
@@ -186,7 +186,6 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 
 func main() {
 	var dir string
-	flag.StringVar(&dir, "dir", "", "")
 	flag.StringVar(&dir, "d", "", "")
 
 	flag.Parse()
