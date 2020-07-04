@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -159,8 +160,12 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 					}
 
 					defer req.Body.Close()
+					body, err := ioutil.ReadAll(req.Body)
+					if err != nil {
+						return
+					}
 
-					if req.StatusCode != 403 {
+					if req.StatusCode != 403 && !strings.Contains(string(body), "API project is not authorized") {
 						fmt.Printf("\n%s returns %d", requestURL, req.StatusCode)
 					}
 				}
