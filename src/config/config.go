@@ -3,7 +3,7 @@ package config
 // Configurations exported
 type Configurations struct {
 	paths PathsConfiguration
-	URLs  URLConfiguration
+	URLs  map[string][]URLConfiguration
 }
 
 // PathsConfiguration exported
