@@ -12,7 +12,6 @@ import (
 
 	conf "./config"
 	"github.com/beevik/etree"
-	"github.com/common-nighthawk/go-figure"
 	"github.com/spf13/viper"
 )
 
@@ -187,8 +186,6 @@ func main() {
 
 	flag.Parse()
 
-	myFigure := figure.NewColorFigure("Slicer", "big", "green", true)
-	myFigure.Print()
 
 	v, err := ConfigReader()
 	if err != nil {
