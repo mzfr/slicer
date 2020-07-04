@@ -30,6 +30,7 @@ func init() {
 	}
 }
 
+// Must be removed if not used for that res/raw thing
 func visit(files *[]string) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -134,6 +135,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 
 	for _, str := range root.SelectElements("string") {
 		strValues := str.SelectAttrValue("name", "none")
+		// Get Firebase DB URL and check if /.json trick works or not
 		if strValues == "firebase_database_url" {
 			firebaseURL := fmt.Sprintf("%s/.json", str.Text())
 			req, err := http.Get(firebaseURL)
@@ -148,6 +150,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 				fmt.Println()
 			}
 		}
+		// Get Google API keys and see if they are restricted or not
 		if strValues == "google_api_key" || strValues == "google_map_keys" {
 			for _, keys := range googleURL.([]interface{}) {
 				for _, values := range keys.(map[interface{}]interface{}) {
@@ -170,6 +173,8 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 				}
 			}
 		}
+		// Some keys that I have found in loads of strings.xml and they have nothing important
+		// so just filter those out.
 		if strings.Contains(strings.ToLower(strValues), "api") {
 			if strValues == "abc_capital_off" || strValues == "abc_capital_on" || strValues == "currentApiLevel" {
 				continue
