@@ -66,7 +66,7 @@ func ConfigReader() (*viper.Viper, error) {
 func getIntents(intentFilters []*etree.Element) {
 	var formatedIntent string
 	for _, intents := range intentFilters {
-		fmt.Println("\tIntent filters")
+		fmt.Println("\tIntent-filters:")
 		for _, Type := range intents.ChildElements() {
 			if Type.Tag == "data" {
 				host := Type.SelectAttrValue("android:host", "*")
@@ -91,14 +91,14 @@ func exported(component *etree.Element) {
 		// we check if it has any Intent-filerts, if yes that means
 		// exported by default
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
-			fmt.Printf("\n- %s", component.SelectAttrValue("android:name", "name not defined"))
+			fmt.Printf("\t%s:", component.SelectAttrValue("android:name", "name not defined"))
 			// TODO: Null has to be printed in red.
 			fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
-			fmt.Printf("\n- %s", component.SelectAttrValue("android:name", "name not defined"))
+			fmt.Printf("\t%s:", component.SelectAttrValue("android:name", "name not defined"))
 			// TODO: Null has to be printed in red.
 			fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
 
@@ -113,15 +113,15 @@ func parseManifest(document *etree.Document) {
 	for _, app := range root.SelectElements("application") {
 		// Check if the backup is allowed or not
 		backup := app.SelectAttrValue("android:allowBackup", "true")
-		fmt.Println("Backup allowed? ", backup)
+		fmt.Println("Backup allowed: ", backup)
 
 		//Check if the app is set debuggable
 		debuggable := app.SelectAttrValue("android:debuggable", "false")
-		fmt.Println("Debuggable? ", debuggable)
+		fmt.Println("Debuggable: ", debuggable)
 
 		var attackSurface = []string{"activity", "receiver", "service"}
 		for _, com := range attackSurface {
-			fmt.Printf("\n------%s------\n", com)
+			fmt.Printf("\n%s:\n", com)
 			for _, components := range app.SelectElements(com) {
 				exported(components)
 			}
@@ -146,10 +146,14 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 			defer req.Body.Close()
 
 			if req.StatusCode == 401 {
-				fmt.Printf("%s is not publiclly accesible", firebaseURL)
+				fmt.Printf("\n\t- %s: Permission Denied", firebaseURL)
+				fmt.Println()
+			} else {
+				fmt.Printf("\n\t- %s: Is open to public", firebaseURL)
 				fmt.Println()
 			}
 		}
+
 		// Get Google API keys and see if they are restricted or not
 		if strValues == "google_api_key" || strValues == "google_map_keys" {
 			for _, keys := range googleURL.([]interface{}) {
@@ -168,18 +172,19 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 					}
 
 					if req.StatusCode != 403 && !strings.Contains(string(body), "API project is not authorized") {
-						fmt.Printf("\n%s returns %d", requestURL, req.StatusCode)
+						fmt.Printf("\t\n- %s: %d", requestURL, req.StatusCode)
 					}
 				}
 			}
 		}
+
 		// Some keys that I have found in loads of strings.xml and they have nothing important
 		// so just filter those out.
 		if strings.Contains(strings.ToLower(strValues), "api") {
 			if strValues == "abc_capital_off" || strValues == "abc_capital_on" || strValues == "currentApiLevel" {
 				continue
 			}
-			fmt.Printf("%s - %s\n", strValues, str.Text())
+			fmt.Printf("\t- %s: %s\n", strValues, str.Text())
 		}
 	}
 }
@@ -193,8 +198,7 @@ func main() {
 	v, _ := ConfigReader()
 
 	paths := v.Get("paths")
-	gURL := v.Get("URLs")
-	// fmt.Println(reflect.TypeOf(gURL))
+	googleURL := v.Get("URLs")
 
 	for _, key := range paths.([]interface{}) {
 		for _, file := range key.(map[interface{}]interface{}) {
@@ -206,8 +210,8 @@ func main() {
 			if err := doc.SelectElement("manifest"); err != nil {
 				parseManifest(doc)
 			} else {
-				fmt.Printf("\n------%s------\n", "Strings")
-				parseStrings(doc, gURL)
+				fmt.Printf("%s:", "Strings")
+				parseStrings(doc, googleURL)
 			}
 		}
 	}
