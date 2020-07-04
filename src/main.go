@@ -190,11 +190,8 @@ func main() {
 
 	flag.Parse()
 
+	v, _ := ConfigReader()
 
-	v, err := ConfigReader()
-	if err != nil {
-		fmt.Printf("Unable to decode into struct, %v", err)
-	}
 	paths := v.Get("paths")
 	gURL := v.Get("URLs")
 	// fmt.Println(reflect.TypeOf(gURL))
