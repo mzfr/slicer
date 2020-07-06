@@ -18,12 +18,14 @@ import (
 func init() {
 	flag.Usage = func() {
 		h := []string{
-			"Extract information from the APK file",
-			"",
+			"Extract information from Manifest and strings of an APK\n",
+			"Usage:",
+			"\tslicer [OPTION] [Extracted APK directory]\n",
 			"Options:",
-			"  -d, --dir		path to jadx output directory",
-			"  -o, --output		Name of the output file",
-			"",
+			"\n  -d, --dir		path to jadx output directory",
+			"  -o, --output		Name of the output file(not implemented)",
+			"\nExamples:\n",
+			"slicer -d /path/to/the/extract/apk",
 		}
 
 		fmt.Fprintf(os.Stderr, strings.Join(h, "\n"))
@@ -92,14 +94,12 @@ func exported(component *etree.Element) {
 		// exported by default
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			fmt.Printf("\t%s:", component.SelectAttrValue("android:name", "name not defined"))
-			// TODO: Null has to be printed in red.
 			fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			fmt.Printf("\t%s:", component.SelectAttrValue("android:name", "name not defined"))
-			// TODO: Null has to be printed in red.
 			fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
 
 			getIntents(intentFilter)
