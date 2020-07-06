@@ -2,11 +2,24 @@ package output
 
 // Info exported
 type Info struct {
-	permission, action, category string
+	Debuggable  string
+	AllowBackup string
+	Activity    Components
+	receiver    Components
+	service     Components
+	strings     []interface{}
 }
 
-// JSONOutput exported
-type JSONOutput struct {
-	packageName, Debuggable, AllowBackup string
-	activites, receivers, services       []Info
+// Components exported
+type Components struct {
+	Name          string
+	Permission    string
+	IntentFilters Filters
+}
+
+// Filters exported
+type Filters struct {
+	Data       []string
+	Action     []interface{}
+	Components []interface{}
 }
