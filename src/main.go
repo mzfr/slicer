@@ -12,6 +12,7 @@ import (
 
 	conf "./config"
 	"github.com/beevik/etree"
+	"github.com/common-nighthawk/go-figure"
 	"github.com/spf13/viper"
 )
 
@@ -24,6 +25,7 @@ func init() {
 			"Options:",
 			"\n  -d, --dir		path to jadx output directory",
 			"  -o, --output		Name of the output file(not implemented)",
+			" -nb, --no-banner	Don't Show Banner",
 			"\nExamples:\n",
 			"slicer -d /path/to/the/extract/apk",
 		}
@@ -172,7 +174,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 					}
 
 					if req.StatusCode != 403 && !strings.Contains(string(body), "API project is not authorized") {
-						fmt.Printf("\t\n- %s: %d", requestURL, req.StatusCode)
+						fmt.Printf("\n\t- %s: %d\n", requestURL, req.StatusCode)
 					}
 				}
 			}
@@ -193,7 +195,15 @@ func main() {
 	var dir string
 	flag.StringVar(&dir, "d", "", "")
 
+	var banner bool
+	flag.BoolVar(&banner, "nb", true, "")
 	flag.Parse()
+
+	if banner {
+		myFigure := figure.NewColorFigure("# Slicer", "big", "green", true)
+		myFigure.Print()
+		fmt.Println()
+	}
 
 	v, _ := ConfigReader()
 
@@ -210,7 +220,7 @@ func main() {
 			if err := doc.SelectElement("manifest"); err != nil {
 				parseManifest(doc)
 			} else {
-				fmt.Printf("%s:", "Strings")
+				fmt.Printf("%s:\n", "Strings")
 				parseStrings(doc, googleURL)
 			}
 		}
