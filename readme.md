@@ -1,31 +1,95 @@
 # Slicer
 
-Okay so I am not going to follow the old way of implementing this. Instead I would make it a very simple tool and then later might add new functionalities to it.
+A tool to automate the recon process on an APK file. 
 
-The things that I have in mind right now are:
+Slicer accepts a path to an extracted APK file and then returns all the activities, receivers, and services which are exported and have `null` permissions and can be externally provoked.
 
-1) Read strings.xml and find all the api keys and firebase URL
-    - For searching just pickup all the strings that have `api`/`token` in them.
-        + Later we'll do a regex check if the values have format of an API or something I guess.
-    - For Firebase perform the `/.json` check directly.
-    - Maybe for google API key add those checks to see if the key is accessible or not.
+__Note__: The APK has to be extracted via `jadx` or `apktool`.
 
-2) It will list all the files of the directly `/res/raw/` and `/res/xml`
-3) It will parse the androidmanifest.xml file and will show all the exported activites, broadcast, service and content.
-    - Only show the one that have exported=True
-        + It would be nice if we can have it like: if no `exported` mention then check if any `intent-filter` is defined. If yes then show that else don't.
-    - Show all the intent filter of all the exported surfaces.
-    - Also show the type of data URL they accept
-    - check if the backup is true or false.
-    - also check if the grantUriPermission is setup on any content provider link
+## Index
 
+* [Summary](#summary)
+* [Features](#features)
+* [Usage](#usage)
+* [Usage example](#usage-example)
 
-The 3rd point looks like a work of drozer but if we can do this then I think we won't have to depend on drozer at all. Also having all this automated would really save loads of time
+## Summary
 
-## Implementation method
+__Why?__
 
-1) Keep the config for the yaml, in that we can store the path of the files to be searched or the keywords that we are going to search.
-Also all the regex that has to be searched etc.
+I started bug bounty like 3 weeks ago and I have been trying my best on android apps. But I noticed one thing that in all the apps there were certain things which I have to do before diving in deep. So I just thought it would be nice to automate that process with a simple tool. 
 
-2) Add a XML parser
-3) In main do all the checks and stuff.
+__Why not drozer?__
+
+Well, drozer is a different beast. Even though it does finds out all the accessible components but I was tired of running those commands again and again.
+
+__Why not automate using drozer?__
+
+I actually wrote a bash script for running certain drozer commands so I won't have to run them manually but there was still some boring stuff that had to be done. Like Checking the `strings.xml` for various API keys, testing if firebase DB was publically accessible or if those google API keys have setup any cap or anything on their usage and lot of other stuff.
+
+__Why not search all the files?__
+
+I think that a tool like grep or ripgrep would be much faster to search through all the files. So if there is something specific that you want to search it would be better to use those tools. But if you think that there is something which should be checked in all the android files then feel free to open an issue.
+
+## Features
+
+* Check if the APK has set the `android:allowbackup` to `true`
+* Check if the APK has set the `android:debuggable` to `true`.
+* Return all the activities, services and broadcast receivers which are exported and have null permission set. This is decided on the basis of two things:
+    - `android:exporte=true` is present in any of the component and have no permission set.
+    -  If exported is not mention then slicer check if any `Intent-filters` are defined for that component, if yes that means that component is exported by default(This is the rule given in android documentation.)
+
+* Check the Firebase URL of the APK by testing it for `.json` trick.
+    - If the firebase URL is `myapp.firebaseio.com` then it will check if `https://myapp.firebaseio.com/.json` returns something or gives permission denied.
+    - If this thing is open then that can be reported as high severity.
+
+* Check if the google API keys are publically accessible or not. 
+    - This can be reported on some bounty programs but have a low severity.
+    - But most of the time reporting this kind of thing will bring out the pain of `Duplicate`.
+    - Also sometimes the company can just close it as `not applicable` and will claim that the KEY has a `usage cap` - r/suspiciouslyspecific :wink: 
+
+* Return other API keys that are present in `strings.xml`
+
+## Usage
+
+It's very simple to use. Following options are available:
+
+```
+Extract information from Manifest and strings of an APK
+
+Usage:
+        slicer [OPTION] [Extracted APK directory]
+
+Options:
+
+  -d, --dir             path to jadx output directory
+  -o, --output          Name of the output file(not implemented)
+ -nb, --no-banner       Don't Show Banner
+```
+
+I have not implemented the `output` flag yet because I think if you can redirect slicer output to a yaml file it will a proper format.
+
+## Usage Example
+
+* Extract information from the APK and display it on the screen.
+
+```
+slicer -d path/to/extact/apk
+```
+
+* Extract information and store in a yaml file:
+
+```
+slicer -d path/to/extracted/apk -nb=false > name.yaml
+```
+__If you plan to use if for Bug bounty or anything similar it's better to store in some file__
+
+## Contribution
+
+All the features implemented in this are things that I've learned in past few weeks, so if you think that there are various other things which should be checked in an APK then please open an issue for that feature and I'd be happy to implement that :)
+
+## Support
+
+If you'd like you can buy me some coffee:
+
+<a href="https://www.buymeacoffee.com/mzfr" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
