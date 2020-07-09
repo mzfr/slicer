@@ -10,7 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	conf "./config"
+	conf "github.com/mzfr/slicer/config"
+
 	"github.com/beevik/etree"
 	"github.com/common-nighthawk/go-figure"
 	"github.com/spf13/viper"
