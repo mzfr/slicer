@@ -10,6 +10,7 @@ __Note__: The APK has to be extracted via `jadx` or `apktool`.
 
 * [Summary](#summary)
 * [Features](#features)
+* [Installation](#installation)
 * [Usage](#usage)
 * [Usage example](#usage-example)
 
@@ -49,6 +50,10 @@ I think that a tool like grep or ripgrep would be much faster to search through 
     - Also sometimes the company can just close it as `not applicable` and will claim that the KEY has a `usage cap` - r/suspiciouslyspecific :wink: 
 
 * Return other API keys that are present in `strings.xml`
+
+## Installation
+
+You can download the binary from the [release](https://github.com/mzfr/slicer/releases) page. Also if you want you can clone this repository and build the binary yourself.
 
 ## Usage
 
