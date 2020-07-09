@@ -54,6 +54,7 @@ func ConfigReader() (*viper.Viper, error) {
 
 	// Set the path to look for the configurations file
 	v.AddConfigPath(".")
+	v.AddConfigPath("$HOME/.slicer/")
 	v.SetConfigType("yml")
 
 	if err := v.ReadInConfig(); err != nil {
