@@ -55,6 +55,8 @@ I think that a tool like grep or ripgrep would be much faster to search through 
 
 You can download the binary from the [release](https://github.com/mzfr/slicer/releases) page. Also if you want you can clone this repository and build the binary yourself.
 
+If you have `go` compiler installed then you can use `go get github.com/mzfr/slicer`.
+
 __NOTE__: Slicer uses `config.yml` file. So either have a file named `config.yml` in your current working directory or make a directory
 named `.slicer` in your `$HOME` and then place the `config.yml` file there.
 
