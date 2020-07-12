@@ -221,6 +221,14 @@ func main() {
 			}
 			if err := doc.SelectElement("manifest"); err != nil {
 				parseManifest(doc)
+				fmt.Printf("%s:\n", "APIkeys-in-manifest")
+				for _, elem := range doc.FindElements("./manifest/application/meta-data") {
+					name := elem.SelectAttrValue("android:name", "")
+					if name != "" && strings.Contains(strings.ToLower(name), "api") {
+						values := elem.SelectAttrValue("android:value", "none")
+						fmt.Printf("\t- %s: %s\n", name, values)
+					}
+				}
 			} else {
 				fmt.Printf("%s:\n", "Strings")
 				parseStrings(doc, googleURL)
