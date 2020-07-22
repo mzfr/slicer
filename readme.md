@@ -50,6 +50,7 @@ I think that a tool like grep or ripgrep would be much faster to search through 
     - Also sometimes the company can just close it as `not applicable` and will claim that the KEY has a `usage cap` - r/suspiciouslyspecific :wink: 
 
 * Return other API keys that are present in `strings.xml`
+* List all the file names present in `/res/raw` and `res/xml` directory.
 
 ## Installation
 
