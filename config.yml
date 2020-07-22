@@ -1,8 +1,10 @@
 paths:
     - manifest: "resources/AndroidManifest.xml"
     - strings: "resources/res/values/strings.xml"
+    - raw: "resources/res/raw/"
+    - xml: "resources/res/xml/"
 
-# These are the URLs that are used to check google API keys.
+    # These are the URLs that are used to check google API keys.
 URLs:
     - maps: https://maps.googleapis.com/maps/api/staticmap?center=45%2C10&zoom=7&size=400x400&key=
     - streetview: https://maps.googleapis.com/maps/api/streetview?size=400x400&location=40.720032,-73.988354&fov=90&heading=235&pitch=10&key=

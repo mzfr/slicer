@@ -10,6 +10,8 @@ type Configurations struct {
 type PathsConfiguration struct {
 	manifest string
 	strings  string
+	raw      string
+	xml      string
 }
 
 // URLConfiguration exported
