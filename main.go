@@ -46,6 +46,15 @@ func visit(root string) ([]string, error) {
 	return files, err
 }
 
+func sendRequest(url string) *http.Response {
+	req, err := http.Get(url)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to connect with firebase DB")
+	}
+
+	return req
+}
+
 // ConfigReader reads the configuration using viper
 func ConfigReader() (*viper.Viper, error) {
 	v := viper.New()
@@ -142,13 +151,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 		// Get Firebase DB URL and check if /.json trick works or not
 		if strValues == "firebase_database_url" {
 			firebaseURL := fmt.Sprintf("%s/.json", str.Text())
-			req, err := http.Get(firebaseURL)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "failed to connect with firebase DB")
-			}
-
-			defer req.Body.Close()
-
+			req := sendRequest(firebaseURL)
 			if req.StatusCode == 401 {
 				fmt.Printf("\n\t- %s: Permission Denied", firebaseURL)
 				fmt.Println()
@@ -164,12 +167,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 				for _, values := range keys.(map[interface{}]interface{}) {
 					requestURL := fmt.Sprintf("%s%s", values, str.Text())
 
-					req, err := http.Get(requestURL)
-					if err != nil {
-						fmt.Fprintf(os.Stderr, "failed to connect with firebase DB: %s\n", err)
-					}
-
-					defer req.Body.Close()
+					req := sendRequest(requestURL)
 					body, err := ioutil.ReadAll(req.Body)
 					if err != nil {
 						return
