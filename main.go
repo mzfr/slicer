@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -35,15 +34,16 @@ func init() {
 	}
 }
 
-// Must be removed if not used for that res/raw thing
-func visit(files *[]string) filepath.WalkFunc {
-	return func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			log.Fatal(err)
+// list all the files of a given directory
+func visit(root string) ([]string, error) {
+	var files []string
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			files = append(files, filepath.Base(path))
 		}
-		*files = append(*files, path)
 		return nil
-	}
+	})
+	return files, err
 }
 
 // ConfigReader reads the configuration using viper
@@ -144,7 +144,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 			firebaseURL := fmt.Sprintf("%s/.json", str.Text())
 			req, err := http.Get(firebaseURL)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "failed to connect with firebase DB: %s\n", err)
+				fmt.Fprintf(os.Stderr, "failed to connect with firebase DB")
 			}
 
 			defer req.Body.Close()
@@ -215,23 +215,45 @@ func main() {
 	for _, key := range paths.([]interface{}) {
 		for _, file := range key.(map[interface{}]interface{}) {
 			filePath := fmt.Sprintf("%s/%s", dir, file)
-			doc := etree.NewDocument()
-			if err := doc.ReadFromFile(filePath); err != nil {
-				panic(err)
+			fi, err := os.Stat(filePath)
+			if err != nil {
+				fmt.Println(err)
+				return
 			}
-			if err := doc.SelectElement("manifest"); err != nil {
-				parseManifest(doc)
-				fmt.Printf("%s:\n", "APIkeys-in-manifest")
-				for _, elem := range doc.FindElements("./manifest/application/meta-data") {
-					name := elem.SelectAttrValue("android:name", "")
-					if name != "" && strings.Contains(strings.ToLower(name), "api") {
-						values := elem.SelectAttrValue("android:value", "none")
-						fmt.Printf("\t- %s: %s\n", name, values)
-					}
+			switch mode := fi.Mode(); {
+			case mode.IsRegular():
+				doc := etree.NewDocument()
+				if err := doc.ReadFromFile(filePath); err != nil {
+					panic(err)
 				}
-			} else {
-				fmt.Printf("%s:\n", "Strings")
-				parseStrings(doc, googleURL)
+				if err := doc.SelectElement("manifest"); err != nil {
+					parseManifest(doc)
+					fmt.Printf("%s:\n", "Apikeys-in-manifest")
+					for _, elem := range doc.FindElements("./manifest/application/meta-data") {
+						name := elem.SelectAttrValue("android:name", "")
+						if name != "" && strings.Contains(strings.ToLower(name), "api") {
+							values := elem.SelectAttrValue("android:value", "none")
+							fmt.Printf("\t- %s: %s\n", name, values)
+						}
+					}
+				} else {
+					fmt.Printf("%s:\n", "Strings")
+					parseStrings(doc, googleURL)
+				}
+			// Just listing files of some directories
+			case mode.IsDir():
+				if filepath.Base(filePath) == "xml" {
+					fmt.Printf("%s:\n", "XML-files")
+				} else {
+					fmt.Printf("%s:\n", "raw-files")
+				}
+				files, err := visit(filePath)
+				if err != nil {
+					fmt.Println(err)
+				}
+				for _, file := range files {
+					fmt.Printf("\t- %s\n", file)
+				}
 			}
 		}
 	}
