@@ -49,7 +49,7 @@ I think that a tool like grep or ripgrep would be much faster to search through 
     - But most of the time reporting this kind of thing will bring out the pain of `Duplicate`.
     - Also sometimes the company can just close it as `not applicable` and will claim that the KEY has a `usage cap` - r/suspiciouslyspecific :wink: 
 
-* Return other API keys that are present in `strings.xml`
+* Return other API keys that are present in `strings.xml` and in `AndroidManifest.xml`
 * List all the file names present in `/res/raw` and `res/xml` directory.
 
 ## Installation
