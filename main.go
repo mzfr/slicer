@@ -132,7 +132,7 @@ func parseManifest(document *etree.Document) {
 		debuggable := app.SelectAttrValue("android:debuggable", "false")
 		fmt.Println("Debuggable: ", debuggable)
 
-		var attackSurface = []string{"activity", "receiver", "service"}
+		var attackSurface = []string{"activity", "receiver", "service", "provider"}
 		for _, com := range attackSurface {
 			fmt.Printf("\n%s:\n", com)
 			for _, components := range app.SelectElements(com) {
