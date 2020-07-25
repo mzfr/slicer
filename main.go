@@ -173,7 +173,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 						return
 					}
 
-					if req.StatusCode != 403 && !strings.Contains(string(body), "API project is not authorized") {
+					if req.StatusCode != 403 && !strings.Contains(string(body), "API project is not authorized") && str.Text() != "" {
 						fmt.Printf("\n\t- %s: %d\n", requestURL, req.StatusCode)
 					}
 				}
@@ -182,7 +182,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 
 		// Some keys that I have found in loads of strings.xml and they have nothing important
 		// so just filter those out.
-		if strings.Contains(strings.ToLower(strValues), "api") {
+		if strings.Contains(strings.ToLower(strValues), "api") && str.Text() != "" {
 			if strValues == "abc_capital_off" || strValues == "abc_capital_on" || strValues == "currentApiLevel" {
 				continue
 			}
