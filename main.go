@@ -111,10 +111,10 @@ func exported(component *etree.Element) {
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
-		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
-			fmt.Printf("\t%s:", component.SelectAttrValue("android:name", "name not defined"))
-			fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
+		fmt.Printf("\t%s:", component.SelectAttrValue("android:name", "name not defined"))
+		fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
 
+		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			getIntents(intentFilter)
 		}
 	}
