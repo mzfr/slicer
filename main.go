@@ -46,13 +46,9 @@ func visit(root string) ([]string, error) {
 	return files, err
 }
 
-func sendRequest(url string) *http.Response {
+func sendRequest(url string) (*http.Response, error) {
 	req, err := http.Get(url)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to connect with firebase DB")
-	}
-
-	return req
+	return req, err
 }
 
 // ConfigReader reads the configuration using viper
@@ -151,7 +147,11 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 		// Get Firebase DB URL and check if /.json trick works or not
 		if strValues == "firebase_database_url" {
 			firebaseURL := fmt.Sprintf("%s/.json", str.Text())
-			req := sendRequest(firebaseURL)
+			req, err := sendRequest(firebaseURL)
+			if err != nil {
+				fmt.Println("Couldn't connect to Firebase")
+				continue
+			}
 			if req.StatusCode == 401 {
 				fmt.Printf("\n\t- %s: Permission Denied", firebaseURL)
 				fmt.Println()
@@ -167,7 +167,11 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 				for _, values := range keys.(map[interface{}]interface{}) {
 					requestURL := fmt.Sprintf("%s%s", values, str.Text())
 
-					req := sendRequest(requestURL)
+					req, err := sendRequest(requestURL)
+					if err != nil {
+						fmt.Println("Unable to connect to the the google map")
+						continue
+					}
 					body, err := ioutil.ReadAll(req.Body)
 					if err != nil {
 						return
