@@ -1,3 +1,7 @@
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![verion: 1.14](https://img.shields.io/github/go-mod/go-version/mzfr/slicer)
+[![platform](https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg)](https://github.com/mzfr/slicer)
+
 # Slicer
 
 A tool to automate the recon process on an APK file. 
@@ -6,15 +10,18 @@ Slicer accepts a path to an extracted APK file and then returns all the activiti
 
 __Note__: The APK has to be extracted via `jadx` or `apktool`.
 
-## Index
+# Table of Content
 
 * [Summary](#summary)
 * [Features](#features)
 * [Installation](#installation)
 * [Usage](#usage)
 * [Usage example](#usage-example)
+* [Acknowledgements and Credits](#acknowledgements-and-credits)
+* [Contribution](#contribution)
+* [Support](#support)
 
-## Summary
+# Summary
 
 __Why?__
 
@@ -32,7 +39,7 @@ __Why not search all the files?__
 
 I think that a tool like grep or ripgrep would be much faster to search through all the files. So if there is something specific that you want to search it would be better to use those tools. But if you think that there is something which should be checked in all the android files then feel free to open an issue.
 
-## Features
+# Features
 
 * Check if the APK has set the `android:allowbackup` to `true`
 * Check if the APK has set the `android:debuggable` to `true`.
@@ -55,7 +62,7 @@ I think that a tool like grep or ripgrep would be much faster to search through 
     - These can be used with tool like dirsearch or ffuf.
 
 
-## Installation
+# Installation
 
 You can download the binary from the [release](https://github.com/mzfr/slicer/releases) page. Also if you want you can clone this repository and build the binary yourself.
 
@@ -64,7 +71,7 @@ If you have `go` compiler installed then you can use `go get github.com/mzfr/sli
 __NOTE__: Slicer uses `config.yml` file. So either have a file named `config.yml` in your current working directory or make a directory
 named `.slicer` in your `$HOME` and then place the `config.yml` file there.
 
-## Usage
+# Usage
 
 It's very simple to use. Following options are available:
 
@@ -83,7 +90,7 @@ Options:
 
 I have not implemented the `output` flag yet because I think if you can redirect slicer output to a yaml file it will a proper format.
 
-## Usage Example
+# Usage Example
 
 * Extract information from the APK and display it on the screen.
 
@@ -98,15 +105,15 @@ slicer -d path/to/extracted/apk -nb=false > name.yaml
 ```
 __If you plan to use if for Bug bounty or anything similar it's better to store in some file__
 
-## Contribution
-
-All the features implemented in this are things that I've learned in past few weeks, so if you think that there are various other things which should be checked in an APK then please open an issue for that feature and I'd be happy to implement that :)
-
-## Acknowledgements and Credits
+# Acknowledgements and Credits
 
 The extractor module used to extract URLs and paths is taken from [apkurlgrep](https://github.com/ndelphit) by @ndelphit
 
-## Support
+# Contribution
+
+All the features implemented in this are things that I've learned in past few weeks, so if you think that there are various other things which should be checked in an APK then please open an issue for that feature and I'd be happy to implement that :)
+
+# Support
 
 If you'd like you can buy me some coffee:
 
