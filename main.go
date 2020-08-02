@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	conf "github.com/mzfr/slicer/config"
+	"github.com/mzfr/slicer/extractor"
 
 	"github.com/beevik/etree"
 	"github.com/common-nighthawk/go-figure"
@@ -259,4 +260,6 @@ func main() {
 			}
 		}
 	}
+	// This should extract all the URLs
+	extractor.Extract(dir)
 }
