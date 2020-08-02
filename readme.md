@@ -51,6 +51,9 @@ I think that a tool like grep or ripgrep would be much faster to search through 
 
 * Return other API keys that are present in `strings.xml` and in `AndroidManifest.xml`
 * List all the file names present in `/res/raw` and `res/xml` directory.
+* Extracts all the URLs and paths.
+    - These can be used with tool like dirsearch or ffuf.
+
 
 ## Installation
 
@@ -98,6 +101,10 @@ __If you plan to use if for Bug bounty or anything similar it's better to store 
 ## Contribution
 
 All the features implemented in this are things that I've learned in past few weeks, so if you think that there are various other things which should be checked in an APK then please open an issue for that feature and I'd be happy to implement that :)
+
+## Acknowledgements and Credits
+
+The extractor module used to extract URLs and paths is taken from [apkurlgrep](https://github.com/ndelphit) by @ndelphit
 
 ## Support
 
