@@ -25,7 +25,7 @@ __Note__: The APK has to be extracted via `jadx` or `apktool`.
 
 __Why?__
 
-I started bug bounty like 3 weeks ago and I have been trying my best on android apps. But I noticed one thing that in all the apps there were certain things which I have to do before diving in deep. So I just thought it would be nice to automate that process with a simple tool. 
+I started bug bounty like 3 weeks ago(in June 2020) and I have been trying my best on android apps. But I noticed one thing that in all the apps there were certain things which I have to do before diving in deep. So I just thought it would be nice to automate that process with a simple tool. 
 
 __Why not drozer?__
 
