@@ -187,7 +187,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 
 		// Some keys that I have found in loads of strings.xml and they have nothing important
 		// so just filter those out.
-		if strings.Contains(strings.ToLower(strValues), "api") && str.Text() != "" {
+		if strings.Contains(strings.ToLower(strValues), "api") && str.Text() != "" && strings.Contains(strings.ToLower(strValues), "key") {
 			if strValues == "abc_capital_off" || strValues == "abc_capital_on" || strValues == "currentApiLevel" {
 				continue
 			}
