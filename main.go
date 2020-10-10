@@ -122,7 +122,7 @@ func parseManifest(document *etree.Document) {
 	root := document.SelectElement("manifest")
 	for _, app := range root.SelectElements("application") {
 		// Check if the backup is allowed or not
-		backup := app.SelectAttrValue("android:allowBackup", "true")
+		backup := app.SelectAttrValue("android:allowBackup", "false")
 		fmt.Println("Backup allowed: ", backup)
 
 		//Check if the app is set debuggable
