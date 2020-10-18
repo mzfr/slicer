@@ -35,6 +35,19 @@ func init() {
 	}
 }
 
+// Function to test if the given
+// directory/file exists or not
+func dirExist(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
 // list all the files of a given directory
 func visit(root string) ([]string, error) {
 	var files []string
@@ -220,8 +233,16 @@ func main() {
 
 	for _, key := range paths.([]interface{}) {
 		for _, file := range key.(map[interface{}]interface{}) {
-			filePath := fmt.Sprintf("%s/%s", dir, file)
-			fi, err := os.Stat(filePath)
+			PathofFile := fmt.Sprintf("%s/%s", dir, file)
+			checkDir, err := dirExist(PathofFile)
+			if err != nil {
+				fmt.Printf("Some issue with directories")
+				continue
+			}
+			if checkDir == false {
+				continue
+			}
+			fi, err := os.Stat(PathofFile)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -232,7 +253,7 @@ func main() {
 			switch mode := fi.Mode(); {
 			case mode.IsRegular():
 				doc := etree.NewDocument()
-				if err := doc.ReadFromFile(filePath); err != nil {
+				if err := doc.ReadFromFile(PathofFile); err != nil {
 					panic(err)
 				}
 				// Parsing AndroidManifest for any API keys in there
@@ -252,12 +273,12 @@ func main() {
 				}
 			// Just listing files of raw and xml directory
 			case mode.IsDir():
-				if filepath.Base(filePath) == "xml" {
+				if filepath.Base(PathofFile) == "xml" {
 					fmt.Printf("%s:\n", "XML-files")
 				} else {
 					fmt.Printf("%s:\n", "raw-files")
 				}
-				files, err := visit(filePath)
+				files, err := visit(PathofFile)
 				if err != nil {
 					fmt.Println(err)
 				}
