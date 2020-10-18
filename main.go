@@ -22,6 +22,11 @@ var (
 	banner bool
 )
 
+// NotVulnerable exported
+var NotVulnerable = map[string]bool{
+	"net.openid.appauth.RedirectUriReceiverActivity": true,
+}
+
 func init() {
 	flag.Usage = func() {
 		h := []string{
@@ -116,6 +121,12 @@ func getIntents(intentFilters []*etree.Element) {
 func exported(component *etree.Element) {
 	exported := component.SelectAttrValue("android:exported", "none")
 	activityName := component.SelectAttrValue("android:name", "name not defined")
+	// If the activity is present in unhackable
+	// kind of list then no point in reporting it
+	// see issue #25 on github.com/mzfr/slicer
+	if NotVulnerable[activityName] {
+		return
+	}
 	permission := component.SelectAttrValue("android:permission", "null")
 	acitvityCode := strings.ReplaceAll(activityName, ".", "/")
 
