@@ -17,6 +17,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	dir    string
+	banner bool
+)
+
 func init() {
 	flag.Usage = func() {
 		h := []string{
@@ -110,20 +115,29 @@ func getIntents(intentFilters []*etree.Element) {
 // If not exported then we check if the intent-filters are set
 func exported(component *etree.Element) {
 	exported := component.SelectAttrValue("android:exported", "none")
+	activityName := component.SelectAttrValue("android:name", "name not defined")
+	permission := component.SelectAttrValue("android:permission", "null")
+	acitvityCode := strings.ReplaceAll(activityName, ".", "/")
+
+	// If the permissions is not "null" than there is no use because we can't access that from outside.
+	if permission != "null" {
+		return
+	}
 
 	if exported == "none" {
 		// If the activity doesn't have android:exported defined
 		// we check if it has any Intent-filerts, if yes that means
 		// exported by default
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
-			fmt.Printf("\t%s:", component.SelectAttrValue("android:name", "name not defined"))
-			fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
+			fmt.Printf("\t%s:", activityName)
+			fmt.Printf("\n\tFile-Path: %s/sources/%s", dir, acitvityCode)
+			fmt.Println("\n\tPermission:")
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
-		fmt.Printf("\t%s:", component.SelectAttrValue("android:name", "name not defined"))
-		fmt.Println("\n\tPermission:", component.SelectAttrValue("android:permission", "null"))
-
+		fmt.Printf("\t%s:", activityName)
+		fmt.Printf("\n\tFile-Path: %s/sources/%s", dir, acitvityCode)
+		fmt.Println("\n\tPermission:")
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			getIntents(intentFilter)
 		}
@@ -213,11 +227,9 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 }
 
 func main() {
-	var dir string
 	flag.StringVar(&dir, "d", "", "")
-
-	var banner bool
 	flag.BoolVar(&banner, "nb", true, "")
+
 	flag.Parse()
 
 	if banner {
