@@ -120,6 +120,9 @@ func exported(component *etree.Element) {
 // Parse the AndroidManifest.xml file
 func parseManifest(document *etree.Document) {
 	root := document.SelectElement("manifest")
+	// Show the name of the package
+	packageName := root.SelectAttrValue("package", "none")
+	fmt.Println("Package: ", packageName)
 	for _, app := range root.SelectElements("application") {
 		// Check if the backup is allowed or not
 		backup := app.SelectAttrValue("android:allowBackup", "false")
