@@ -226,12 +226,16 @@ func main() {
 				fmt.Println(err)
 				return
 			}
+			// Reading the config.yml if the input is of a file
+			// Than use the case 1 i.e mode.IsRegular
+			// if the input was a directory than the case 2
 			switch mode := fi.Mode(); {
 			case mode.IsRegular():
 				doc := etree.NewDocument()
 				if err := doc.ReadFromFile(filePath); err != nil {
 					panic(err)
 				}
+				// Parsing AndroidManifest for any API keys in there
 				if err := doc.SelectElement("manifest"); err != nil {
 					parseManifest(doc)
 					fmt.Printf("%s:\n", "Apikeys-in-manifest")
@@ -246,7 +250,7 @@ func main() {
 					fmt.Printf("%s:\n", "Strings")
 					parseStrings(doc, googleURL)
 				}
-			// Just listing files of some directories
+			// Just listing files of raw and xml directory
 			case mode.IsDir():
 				if filepath.Base(filePath) == "xml" {
 					fmt.Printf("%s:\n", "XML-files")
