@@ -235,6 +235,7 @@ func main() {
 		for _, file := range key.(map[interface{}]interface{}) {
 			PathofFile := fmt.Sprintf("%s/%s", dir, file)
 			checkDir, err := dirExist(PathofFile)
+			// in some app directories like raw or xml doesn't exists
 			if err != nil {
 				fmt.Printf("Some issue with directories")
 				continue
