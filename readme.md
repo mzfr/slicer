@@ -12,14 +12,17 @@ __Note__: The APK has to be extracted via `jadx` or `apktool`.
 
 # Table of Content
 
-* [Summary](#summary)
-* [Features](#features)
-* [Installation](#installation)
-* [Usage](#usage)
-* [Usage example](#usage-example)
-* [Acknowledgements and Credits](#acknowledgements-and-credits)
-* [Contribution](#contribution)
-* [Support](#support)
+- [Slicer](#slicer)
+- [Table of Content](#table-of-content)
+- [Summary](#summary)
+- [Features](#features)
+- [Installation](#installation)
+  - [Arch Linux](#arch-linux)
+- [Usage](#usage)
+- [Usage Example](#usage-example)
+- [Acknowledgements and Credits](#acknowledgements-and-credits)
+- [Contribution](#contribution)
+- [Support](#support)
 
 # Summary
 
@@ -70,6 +73,20 @@ If you have `go` compiler installed then you can use `go get github.com/mzfr/sli
 
 __NOTE__: Slicer uses `config.yml` file. So either have a file named `config.yml` in your current working directory or make a directory
 named `.slicer` in your `$HOME` and then place the `config.yml` file there.
+
+## Arch Linux
+
+`slicer` can be installed from available [AUR packages](https://aur.archlinux.org/packages/?O=0&SeB=nd&K=A+tool+to+automate+the+boring&outdated=&SB=n&SO=a&PP=50&do_Search=Go) using an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers). For example,
+
+```
+yay -S slicer
+```
+
+If you prefer, you can clone the [AUR packages](https://aur.archlinux.org/packages/?O=0&SeB=nd&K=A+tool+to+automate+the+boring&outdated=&SB=n&SO=a&PP=50&do_Search=Go) and then compile them with [makepkg](https://wiki.archlinux.org/index.php/Makepkg). For example,
+
+```
+git clone https://aur.archlinux.org/slicer.git && cd slicer && makepkg -si
+```
 
 # Usage
 
