@@ -142,13 +142,11 @@ func exported(component *etree.Element) {
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			fmt.Printf("\t%s:", activityName)
 			fmt.Printf("\n\tFile-Path: %s/sources/%s", dir, acitvityCode)
-			fmt.Println("\n\tPermission:")
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
 		fmt.Printf("\t%s:", activityName)
 		fmt.Printf("\n\tFile-Path: %s/sources/%s", dir, acitvityCode)
-		fmt.Println("\n\tPermission:")
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			getIntents(intentFilter)
 		}
