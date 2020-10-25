@@ -141,12 +141,12 @@ func exported(component *etree.Element) {
 		// exported by default
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			fmt.Printf("\t%s:", activityName)
-			fmt.Printf("\n\tFile-Path: %s/sources/%s", dir, acitvityCode)
+			fmt.Printf("\n\tFile-Path: %s/sources/%s.java", dir, acitvityCode)
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
 		fmt.Printf("\t%s:", activityName)
-		fmt.Printf("\n\tFile-Path: %s/sources/%s", dir, acitvityCode)
+		fmt.Printf("\n\tFile-Path: %s/sources/%s.java", dir, acitvityCode)
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			getIntents(intentFilter)
 		}
