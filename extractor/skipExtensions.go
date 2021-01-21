@@ -29,7 +29,9 @@ func IsFontExt(ext string) bool {
 // IsOtherExt exported
 func IsOtherExt(ext string) bool {
 	return strings.EqualFold(ext, ".so") ||
-		strings.EqualFold(ext, ".wav")
+		strings.EqualFold(ext, ".wav") ||
+		strings.EqualFold(ext, ".mp3")
+
 }
 
 // SkipExtension exported
