@@ -13,7 +13,6 @@ import (
 	"github.com/mzfr/slicer/extractor"
 
 	"github.com/beevik/etree"
-	"github.com/common-nighthawk/go-figure"
 	"github.com/spf13/viper"
 )
 
@@ -36,7 +35,6 @@ func init() {
 			"Options:",
 			"\n  -d, --dir		path to jadx output directory",
 			"  -o, --output		Name of the output file(not implemented)",
-			" -nb, --no-banner	Don't Show Banner",
 			"\nExamples:\n",
 			"slicer -d /path/to/the/extract/apk",
 		}
@@ -156,9 +154,15 @@ func exported(component *etree.Element) {
 // Parse the AndroidManifest.xml file
 func parseManifest(document *etree.Document) {
 	root := document.SelectElement("manifest")
+
 	// Show the name of the package
 	packageName := root.SelectAttrValue("package", "none")
 	fmt.Println("Package: ", packageName)
+
+	// Keep the version of the app as well
+	appVersion := root.SelectAttrValue("android:versionName", "none")
+	fmt.Println("Version: ", appVersion)
+
 	for _, app := range root.SelectElements("application") {
 		// Check if the backup is allowed or not
 		backup := app.SelectAttrValue("android:allowBackup", "false")
@@ -237,15 +241,6 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 
 func main() {
 	flag.StringVar(&dir, "d", "", "")
-	flag.BoolVar(&banner, "nb", true, "")
-
-	flag.Parse()
-
-	if banner {
-		myFigure := figure.NewColorFigure("# Slicer", "big", "green", true)
-		myFigure.Print()
-		fmt.Println()
-	}
 
 	v, _ := ConfigReader()
 
