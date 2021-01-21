@@ -156,7 +156,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 func getIntents(intentFilters []*etree.Element) {
 	var formatedIntent string
 	for _, intents := range intentFilters {
-		fmt.Println("\tIntent-filters:")
+		fmt.Println("\n\tIntent-filters:")
 		for _, Type := range intents.ChildElements() {
 			if Type.Tag == "data" {
 				host := Type.SelectAttrValue("android:host", "*")
@@ -176,6 +176,7 @@ func getIntents(intentFilters []*etree.Element) {
 func exported(component *etree.Element) {
 	exported := component.SelectAttrValue("android:exported", "none")
 	activityName := component.SelectAttrValue("android:name", "name not defined")
+	grantURIPermissions := component.SelectAttrValue("android:grantUriPermissions", "none")
 	// If the activity is present in unhackable
 	// kind of list then no point in reporting it
 	// see issue #25 on github.com/mzfr/slicer
@@ -188,6 +189,20 @@ func exported(component *etree.Element) {
 	// If the permissions is not "null" than there is no use because we can't access that from outside.
 	if permission != "null" {
 		return
+	}
+
+	// this mean that we are looking at a provider and that provider
+	// give via URL and might be exploitable using other exported activities
+	if grantURIPermissions == "true" {
+		authority := component.SelectAttrValue("android:authorities", "none")
+		for _, child := range component.ChildElements() {
+			resourcePath := child.SelectAttrValue("android:resource", "check XML file")
+			fmt.Printf("\n\t%s:", activityName)
+			fmt.Printf("\n\t - Exported: %s", exported)
+			fmt.Printf("\n\t - Authority: %s", authority)
+			fmt.Printf("\n\t - Resource: %s", resourcePath)
+
+		}
 	}
 
 	if exported == "none" {
@@ -241,9 +256,8 @@ func parseManifest(document *etree.Document) {
 
 func main() {
 	flag.StringVar(&dir, "d", "", "")
-
+	flag.Parse()
 	v, _ := ConfigReader()
-
 	paths := v.Get("paths")
 	googleURL := v.Get("URLs")
 
@@ -276,7 +290,7 @@ func main() {
 				// Parsing AndroidManifest for any API keys in there
 				if err := doc.SelectElement("manifest"); err != nil {
 					parseManifest(doc)
-					fmt.Printf("%s:\n", "Apikeys-in-manifest")
+					fmt.Printf("\n%s:\n", "Apikeys-in-manifest")
 					for _, elem := range doc.FindElements("./manifest/application/meta-data") {
 						name := elem.SelectAttrValue("android:name", "")
 						if name != "" && strings.Contains(strings.ToLower(name), "api") {
@@ -288,7 +302,7 @@ func main() {
 					fmt.Printf("%s:\n", "Strings")
 					parseStrings(doc, googleURL)
 				}
-			// Just listing files of raw and xml directory
+				// Just listing files of raw and xml directory
 			case mode.IsDir():
 				if filepath.Base(PathofFile) == "xml" {
 					fmt.Printf("%s:\n", "XML-files")
