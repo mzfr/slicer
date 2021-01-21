@@ -94,6 +94,63 @@ func ConfigReader() (*viper.Viper, error) {
 	return v, err
 }
 
+// Parse the /res/values/strings.xml
+func parseStrings(document *etree.Document, googleURL interface{}) {
+	root := document.SelectElement("resources")
+
+	for _, str := range root.SelectElements("string") {
+		strValues := str.SelectAttrValue("name", "none")
+		// Get Firebase DB URL and check if /.json trick works or not
+		if strValues == "firebase_database_url" {
+			firebaseURL := fmt.Sprintf("%s/.json", str.Text())
+			req, err := sendRequest(firebaseURL)
+			if err != nil {
+				fmt.Println("Couldn't connect to Firebase")
+				continue
+			}
+			if req.StatusCode == 401 {
+				fmt.Printf("\n\t- %s: Permission Denied", firebaseURL)
+				fmt.Println()
+			} else {
+				fmt.Printf("\n\t- %s: Is open to public", firebaseURL)
+				fmt.Println()
+			}
+		}
+
+		// Get Google API keys and see if they are restricted or not
+		if strValues == "google_api_key" || strValues == "google_map_keys" {
+			for _, keys := range googleURL.([]interface{}) {
+				for _, values := range keys.(map[interface{}]interface{}) {
+					requestURL := fmt.Sprintf("%s%s", values, str.Text())
+
+					req, err := sendRequest(requestURL)
+					if err != nil {
+						fmt.Println("Unable to connect to the the google map")
+						continue
+					}
+					body, err := ioutil.ReadAll(req.Body)
+					if err != nil {
+						return
+					}
+
+					if req.StatusCode != 403 && !strings.Contains(string(body), "API project is not authorized") && str.Text() != "" {
+						fmt.Printf("\n\t- %s: %d\n", requestURL, req.StatusCode)
+					}
+				}
+			}
+		}
+
+		// Some keys that I have found in loads of strings.xml and they have nothing important
+		// so just filter those out.
+		if strings.Contains(strings.ToLower(strValues), "api") && str.Text() != "" && strings.Contains(strings.ToLower(strValues), "key") && strings.Contains(strings.ToLower(strValues), "tokens") {
+			if strValues == "abc_capital_off" || strValues == "abc_capital_on" || strValues == "currentApiLevel" {
+				continue
+			}
+			fmt.Printf("\t- %s: %s\n", strValues, str.Text())
+		}
+	}
+}
+
 //Get Intents of all those activites which are either
 // exported or have some intent filters defined
 func getIntents(intentFilters []*etree.Element) {
@@ -178,63 +235,6 @@ func parseManifest(document *etree.Document) {
 			for _, components := range app.SelectElements(com) {
 				exported(components)
 			}
-		}
-	}
-}
-
-// Parse the /res/values/strings.xml
-func parseStrings(document *etree.Document, googleURL interface{}) {
-	root := document.SelectElement("resources")
-
-	for _, str := range root.SelectElements("string") {
-		strValues := str.SelectAttrValue("name", "none")
-		// Get Firebase DB URL and check if /.json trick works or not
-		if strValues == "firebase_database_url" {
-			firebaseURL := fmt.Sprintf("%s/.json", str.Text())
-			req, err := sendRequest(firebaseURL)
-			if err != nil {
-				fmt.Println("Couldn't connect to Firebase")
-				continue
-			}
-			if req.StatusCode == 401 {
-				fmt.Printf("\n\t- %s: Permission Denied", firebaseURL)
-				fmt.Println()
-			} else {
-				fmt.Printf("\n\t- %s: Is open to public", firebaseURL)
-				fmt.Println()
-			}
-		}
-
-		// Get Google API keys and see if they are restricted or not
-		if strValues == "google_api_key" || strValues == "google_map_keys" {
-			for _, keys := range googleURL.([]interface{}) {
-				for _, values := range keys.(map[interface{}]interface{}) {
-					requestURL := fmt.Sprintf("%s%s", values, str.Text())
-
-					req, err := sendRequest(requestURL)
-					if err != nil {
-						fmt.Println("Unable to connect to the the google map")
-						continue
-					}
-					body, err := ioutil.ReadAll(req.Body)
-					if err != nil {
-						return
-					}
-
-					if req.StatusCode != 403 && !strings.Contains(string(body), "API project is not authorized") && str.Text() != "" {
-						fmt.Printf("\n\t- %s: %d\n", requestURL, req.StatusCode)
-					}
-				}
-			}
-		}
-
-		// Some keys that I have found in loads of strings.xml and they have nothing important
-		// so just filter those out.
-		if strings.Contains(strings.ToLower(strValues), "api") && str.Text() != "" && strings.Contains(strings.ToLower(strValues), "key") && strings.Contains(strings.ToLower(strValues), "tokens") {
-			if strValues == "abc_capital_off" || strValues == "abc_capital_on" || strValues == "currentApiLevel" {
-				continue
-			}
-			fmt.Printf("\t- %s: %s\n", strValues, str.Text())
 		}
 	}
 }
