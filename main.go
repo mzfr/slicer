@@ -80,14 +80,14 @@ func ConfigReader() (*viper.Viper, error) {
 	// In case we are using windows
 
 	userprofile := os.Getenv("USERPROFILE")
-	windowConfigFilePath := filepath.Join(userprofile, ".slicer/config.yml")
+	windowConfigFilePath := filepath.Join(userprofile, ".slicer")
 	// Set the file name of the configurations file
 	v.SetConfigName("config")
 
 	// Set the path to look for the configurations file
+	v.AddConfigPath(windowConfigFilePath)
 	v.AddConfigPath(".")
 	v.AddConfigPath("$HOME/.slicer/")
-	v.AddConfigPath(windowConfigFilePath)
 	v.SetConfigType("yml")
 
 	if err := v.ReadInConfig(); err != nil {
