@@ -76,12 +76,18 @@ func sendRequest(url string) (*http.Response, error) {
 // ConfigReader reads the configuration using viper
 func ConfigReader() (*viper.Viper, error) {
 	v := viper.New()
+
+	// In case we are using windows
+
+	userprofile := os.Getenv("USERPROFILE")
+	windowConfigFilePath := filepath.Join(userprofile, ".slicer/config.yml")
 	// Set the file name of the configurations file
 	v.SetConfigName("config")
 
 	// Set the path to look for the configurations file
 	v.AddConfigPath(".")
 	v.AddConfigPath("$HOME/.slicer/")
+	v.AddConfigPath(windowConfigFilePath)
 	v.SetConfigType("yml")
 
 	if err := v.ReadInConfig(); err != nil {
@@ -184,7 +190,6 @@ func exported(component *etree.Element) {
 		return
 	}
 	permission := component.SelectAttrValue("android:permission", "null")
-	acitvityCode := strings.ReplaceAll(activityName, ".", "/")
 
 	// If the permissions is not "null" than there is no use because we can't access that from outside.
 	if permission != "null" {
@@ -211,12 +216,10 @@ func exported(component *etree.Element) {
 		// exported by default
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			fmt.Printf("\t%s:", activityName)
-			fmt.Printf("\n\tFile-Path: %s/sources/%s.java", dir, acitvityCode)
 			getIntents(intentFilter)
 		}
 	} else if exported == "true" {
 		fmt.Printf("\t%s:", activityName)
-		fmt.Printf("\n\tFile-Path: %s/sources/%s.java", dir, acitvityCode)
 		if intentFilter := component.SelectElements("intent-filter"); intentFilter != nil {
 			getIntents(intentFilter)
 		}
@@ -263,6 +266,7 @@ func main() {
 
 	for _, key := range paths.([]interface{}) {
 		for _, file := range key.(map[interface{}]interface{}) {
+			fmt.Printf("%s %s", dir, file)
 			PathofFile := fmt.Sprintf("%s/%s", dir, file)
 			checkDir, err := dirExist(PathofFile)
 			// in some app directories like raw or xml doesn't exists
