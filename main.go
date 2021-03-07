@@ -317,8 +317,12 @@ func main() {
 				if err != nil {
 					fmt.Println(err)
 				}
-				for _, file := range files {
-					fmt.Printf("\t- %s\n", file)
+				if len(files) > 10 {
+					fmt.Printf("\t- Found %d files\n",len(files))
+				} else {
+					for _, file := range files {
+						fmt.Printf("\t- %s\n", file)
+					}
 				}
 			}
 		}
