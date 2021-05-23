@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -114,8 +115,15 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 				fmt.Println("Couldn't connect to Firebase")
 				continue
 			}
-			if req.StatusCode == 401 {
-				fmt.Printf("\n\t- %s: Permission Denied", firebaseURL)
+
+			//We Read the response body on the line below.
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			sb := string(body)
+			if req.StatusCode == 401 && strings.Contains(sb, "disbaled") {
+				fmt.Printf("\n\t- %s: Firebase is not open to Public", firebaseURL)
 				fmt.Println()
 			} else {
 				fmt.Printf("\n\t- %s: Is open to public", firebaseURL)
@@ -318,7 +326,7 @@ func main() {
 					fmt.Println(err)
 				}
 				if len(files) > 10 {
-					fmt.Printf("\t- Found %d files\n",len(files))
+					fmt.Printf("\t- Found %d files\n", len(files))
 				} else {
 					for _, file := range files {
 						fmt.Printf("\t- %s\n", file)
