@@ -1,4 +1,6 @@
 .code-workspace
 *.yaml
 *.tar
+target/
 testing/
+testingapp/
