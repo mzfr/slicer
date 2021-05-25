@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::path::Path;
 
 static MANIFEST: &str = "resources/AndroidManifest.xml";
-static XMLNS: &str = "{http://schemas.android.com/apk/res/android}";
+static XMLNS: &str = "http://schemas.android.com/apk/res/android";
 
 fn parse_args() -> ArgMatches {
     App::new("slicer")
@@ -43,13 +43,8 @@ fn general_package_info(node: roxmltree::Node) {
 // if yes then parse over those filters as well
 // if no then not exported
 fn exported_components(node: roxmltree::Node) {
-    let exported = format!("{}{}", XMLNS, "exported");
-    let name = format!("{}{}", XMLNS, "name");
-    if node.has_attribute("android:exported") {
-        println!("It's working");
-        //println!("{:?}", node.attribute(name.as_str()));
-    } else {
-        println!("Not working");
+    if node.has_attribute((XMLNS, "exported")) {
+        println!("{:?}", node.attribute((XMLNS, "name")));
     }
 }
 
