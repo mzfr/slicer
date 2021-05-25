@@ -1,20 +1,3 @@
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![platform](https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg)](https://github.com/mzfr/slicer)
-
-# Table of Content
-
-- [Slicer](#slicer)
-- [Table of Content](#table-of-content)
-- [Summary](#summary)
-- [Features](#features)
-- [Installation](#installation)
-  - [Arch Linux](#arch-linux)
-- [Usage](#usage)
-- [Usage Example](#usage-example)
-- [Acknowledgements and Credits](#acknowledgements-and-credits)
-- [Contribution](#contribution)
-- [Support](#support)
-
 # Slicer
 
 A tool to automate the recon process on an APK file. 
@@ -72,6 +55,22 @@ I think that a tool like grep or ripgrep would be much faster to search through 
 
 # Installation
 
+## For Rust
+
+If you'd like to build this locally, then make sure you have [`rust` installed](https://www.rust-lang.org/tools/install). After that do the following
+
+* `git clone https://github.com/mzfr/slicer`
+* `cd slicer`
+* `cargo build`
+
+And then in the `target/debug` there should be a binary named `Slicer` which you can run.
+
+Once its ported completely in rust then I'll just release the binaries as well.
+
+## For golang
+
+__I am not sure if go get will work now since I've moved stuff to another branch.__
+
 You can download the binary from the [release](https://github.com/mzfr/slicer/releases) page. Also if you want you can clone this repository and build the binary yourself.
 
 If you have `go` compiler installed then you can use `go get github.com/mzfr/slicer`.
@@ -106,11 +105,8 @@ Usage:
 Options:
 
   -d, --dir             path to jadx output directory
-  -o, --output          Name of the output file(not implemented)
  -nb, --no-banner       Don't Show Banner
 ```
-
-I have not implemented the `output` flag yet because I think if you can redirect slicer output to a yaml file it will a proper format.
 
 # Usage Example
 
