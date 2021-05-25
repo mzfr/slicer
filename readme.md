@@ -14,19 +14,18 @@ P.S -> As of 26/05/2021, rust version of slicer is not supposed to be used becau
 
 # Summary
 
-__Why?__
+### Why?
 
 I started bug bounty like 3 weeks ago(in June 2020) and I have been trying my best on android apps. But I noticed one thing that in all the apps there were certain things which I have to do before diving in deep. So I just thought it would be nice to automate that process with a simple tool. 
-
-__Why not drozer?__
+### Why not drozer?
 
 Well, drozer is a different beast. Even though it does finds out all the accessible components but I was tired of running those commands again and again.
 
-__Why not automate using drozer?__
+### Why not automate using drozer?
 
 I actually wrote a bash script for running certain drozer commands so I won't have to run them manually but there was still some boring stuff that had to be done. Like Checking the `strings.xml` for various API keys, testing if firebase DB was publically accessible or if those google API keys have setup any cap or anything on their usage and lot of other stuff.
 
-__Why not search all the files?__
+### Why not search all the files?
 
 I think that a tool like grep or ripgrep would be much faster to search through all the files. So if there is something specific that you want to search it would be better to use those tools. But if you think that there is something which should be checked in all the android files then feel free to open an issue.
 
@@ -122,10 +121,6 @@ slicer -d path/to/extact/apk
 slicer -d path/to/extracted/apk -nb=false > name.yaml
 ```
 __If you plan to use if for Bug bounty or anything similar it's better to store in some file__
-
-# Acknowledgements and Credits
-
-The extractor module used to extract URLs and paths is taken from [apkurlgrep](https://github.com/ndelphit) by @ndelphit
 
 # Contribution
 
