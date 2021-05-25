@@ -1,14 +1,5 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-![verion: 1.14](https://img.shields.io/github/go-mod/go-version/mzfr/slicer)
 [![platform](https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg)](https://github.com/mzfr/slicer)
-
-# Slicer
-
-A tool to automate the recon process on an APK file. 
-
-Slicer accepts a path to an extracted APK file and then returns all the activities, receivers, and services which are exported and have `null` permissions and can be externally provoked.
-
-__Note__: The APK has to be extracted via `jadx` or `apktool`.
 
 # Table of Content
 
@@ -23,6 +14,20 @@ __Note__: The APK has to be extracted via `jadx` or `apktool`.
 - [Acknowledgements and Credits](#acknowledgements-and-credits)
 - [Contribution](#contribution)
 - [Support](#support)
+
+# Slicer
+
+A tool to automate the recon process on an APK file. 
+
+Slicer accepts a path to an extracted APK file and then returns all the activities, receivers, and services which are exported and have `null` permissions and can be externally provoked.
+
+__Note__: The APK has to be extracted via `jadx` or `apktool`.
+
+# Languages
+
+So I initially wrote slicer in `golang` but then I just wanted to learn `rust` so I decided to port the tool in golang. If you'd like to see the golang code you can checkout the `go` branch. The master branch contains only the rust files.
+
+P.S -> As of 26/05/2021, rust version of slicer is not supposed to be used because it's not fully functional and I'm still working on it.
 
 # Summary
 
