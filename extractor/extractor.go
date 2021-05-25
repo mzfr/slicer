@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -134,12 +135,25 @@ func Extract(dir string) {
 	sortedUrls, sortedPaths := sortUrls(founds)
 
 	if len(sortedUrls) > 0 {
-		filePath := fmt.Sprintf("%s/URLs.txt", dir)
+		filePath := fmt.Sprintf("%s/hold-url.txt", dir)
 		writeToFile(sortedUrls, filePath)
 	}
 
 	if len(sortedPaths) > 0 {
-		filePath := fmt.Sprintf("%s/paths.txt", dir)
+		filePath := fmt.Sprintf("%s/hold-paths.txt", dir)
 		writeToFile(sortedPaths, filePath)
+	}
+	//TODO: Check if those files exists or not before running the exec command
+	cmd := exec.Command("strings hold-url.txt > urls.txt")
+	err := cmd.Run()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	cmd := exec.Command("strings hold-paths.txt > paths.txt")
+	err := cmd.Run()
+
+	if err != nil {
+		log.Fatal(err)
 	}
 }
