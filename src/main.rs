@@ -1,10 +1,31 @@
 #![allow(non_snake_case, unused_must_use)]
 use clap::{App, Arg, ArgMatches};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
 
 static MANIFEST: &str = "resources/AndroidManifest.xml";
 static XMLNS: &str = "http://schemas.android.com/apk/res/android";
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Root {
+    pub activity: Activity,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Activity {
+    pub name: String,
+    pub filter: Option<Filter>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Filter {
+    pub one: String,
+    pub two: String,
+}
 
 fn parse_args() -> ArgMatches {
     App::new("slicer")
@@ -42,15 +63,34 @@ fn general_package_info(node: roxmltree::Node) {
 // if no then check if it has intent filters or not
 // if yes then parse over those filters as well
 // if no then not exported
-fn exported_components(node: roxmltree::Node) {
+fn exported_components<'a>(node: roxmltree::Node<'a, '_>, exported: &mut HashMap<&str, &'a str>) {
+    let component_name = node.attribute((XMLNS, "name")).unwrap();
     if node.has_attribute((XMLNS, "exported")) {
-        println!("{:?}", node.attribute((XMLNS, "name")));
+        let is_exported = node.attribute((XMLNS, "exported"));
+        if is_exported.unwrap() == "true" {
+            println!("Exported Activity: {:?}", node.attribute((XMLNS, "name")));
+        }
+    }
+    let intent = node.first_element_child();
+    if intent != None {
+        exported.insert("activity", component_name);
+        for child in intent.unwrap().children() {
+            if child.attributes().len() > 0 {
+                println!(
+                    "{:?} --> {:?}",
+                    child.tag_name(),
+                    child.attribute((XMLNS, "name")).unwrap()
+                )
+            }
+        }
     }
 }
 
 // Given a directory name it will read the AndroidManifest.xml
 // file and return the XML document loaded in the memory
 fn read_xml_file(directory: String) {
+    let mut EXPORTED: HashMap<&str, &str> = HashMap::new();
+
     if Path::new(&directory).exists() {
         // Join paths and then store the string version into another variable
         let AndroidManifestPath = Path::new(&directory).join(MANIFEST); // This gives PathBuf
@@ -67,10 +107,11 @@ fn read_xml_file(directory: String) {
                 return;
             }
         };
+
         for node in doc.descendants() {
             match node.tag_name().name() {
                 "manifest" => general_package_info(node),
-                "activity" => exported_components(node),
+                "activity" => exported_components(node, &mut EXPORTED),
                 _ => (), // In case the node is something different
             }
         }
