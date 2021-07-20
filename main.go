@@ -117,7 +117,7 @@ func parseStrings(document *etree.Document, googleURL interface{}) {
 			}
 
 			//We Read the response body on the line below.
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := ioutil.ReadAll(req.Body)
 			if err != nil {
 				log.Fatalln(err)
 			}

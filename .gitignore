@@ -2,3 +2,5 @@
 *.yaml
 *.tar
 testing/
+target/
+testingapp/

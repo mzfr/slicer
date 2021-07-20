@@ -150,8 +150,8 @@ func Extract(dir string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cmd := exec.Command("strings hold-paths.txt > paths.txt")
-	err := cmd.Run()
+	cmd = exec.Command("strings hold-paths.txt > paths.txt")
+	err = cmd.Run()
 
 	if err != nil {
 		log.Fatal(err)
