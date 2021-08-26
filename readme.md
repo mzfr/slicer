@@ -67,6 +67,8 @@ I think that a tool like grep or ripgrep would be much faster to search through 
 
 # Installation
 
+__NOTE__: I'll be rewriting this tool in python so its possible that either some error occurs in the go version or you are not able to install it.
+
 You can download the binary from the [release](https://github.com/mzfr/slicer/releases) page. Also if you want you can clone this repository and build the binary yourself.
 
 If you have `go` compiler installed then you can use `go get github.com/mzfr/slicer`.
