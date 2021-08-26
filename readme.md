@@ -1,5 +1,4 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-![verion: 1.14](https://img.shields.io/github/go-mod/go-version/mzfr/slicer)
 [![platform](https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg)](https://github.com/mzfr/slicer)
 
 # Slicer
