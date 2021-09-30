@@ -9,6 +9,15 @@ analysis = dict()
 
 
 def is_accessible(child):
+    """check if the component is accessible or not.
+
+    Args:
+        child : children element of the component
+
+    Returns:
+        activities(dict): dictionary format containing
+                          information about the component
+    """
     activities = {}
     filters = {}
     if xmlns+"exported" in child.attrib:
@@ -29,6 +38,12 @@ def is_accessible(child):
 
 
 def process_manifest(tree):
+    """process the Android manifest and find out all
+     the exported or accessible components
+
+    Args:
+        tree: xml.ElementTree Object
+    """
 
     for child in tree.iter():
         if child.tag == "manifest":
@@ -49,6 +64,12 @@ def process_manifest(tree):
 
 
 def main(directory: str, config_file: str):
+    """Drive the whole program
+
+    Args:
+        directory (str): directory which we have to process
+        config_file (str): path to the config file
+    """
     if path.isdir(directory) and path.exists(config_file):
         with open(config_file, 'r') as f:
             config = json.load(f)
