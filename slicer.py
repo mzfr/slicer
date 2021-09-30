@@ -21,19 +21,19 @@ def is_accessible(child):
     """
     activities = {}
     filters = {}
-    if xmlns+"exported" in child.attrib:
+    if xmlns + "exported" in child.attrib:
         # It's exported so just get the intents and play with it
         pass
-    
+
     if child.find("intent-filter"):
-        name = child.attrib[xmlns+"name"]
-        
+        name = child.attrib[xmlns + "name"]
+
         for element in child.findall("intent-filter"):
             for elem in element:
                 # Here is a possibility of error like out of index
                 filters[elem.tag] = list(elem.attrib.values())[0]
         activities[child.tag] = name
-        activities['intent-filters'] = filters
+        activities["intent-filters"] = filters
 
     return activities
 
@@ -48,20 +48,21 @@ def process_manifest(tree):
 
     for child in tree.iter():
         if child.tag == "manifest":
-            analysis['version'] = child.attrib[xmlns+'versionName']
+            analysis["version"] = child.attrib[xmlns + "versionName"]
 
-            if xmlns+'allowBackup' in child.attrib:
-                analysis['allowBackup'] = child.attrib[xmlns+'allowBackup']
-            analysis['package'] = child.attrib['package']
+            if xmlns + "allowBackup" in child.attrib:
+                analysis["allowBackup"] = child.attrib[xmlns + "allowBackup"]
+            analysis["package"] = child.attrib["package"]
 
         elif child.tag == "application":
-            if xmlns+"debuggable" in child.attrib:
-                analysis['debuggable'] = child.attrib[xmlns+"debuggable"]
-        
+            if xmlns + "debuggable" in child.attrib:
+                analysis["debuggable"] = child.attrib[xmlns + "debuggable"]
+
         elif child.tag in ["activity", "service", "receiver", "provider"]:
             activity = is_accessible(child)
             if activity:
                 print(activity)
+
 
 def find_keys(strings_path: str, config):
     """Find the api keys in strings.xml and AndroidManifest.xml
@@ -74,19 +75,22 @@ def find_keys(strings_path: str, config):
     values = ET.parse(strings_path)
     for child in values.iter():
         if "name" in child.attrib:
-            attrib_name = child.attrib['name']
+            attrib_name = child.attrib["name"]
             if attrib_name == "firebase_database_url":
                 url = child.text + "/.json"
                 r = requests.get(url)
                 if r.status_code != 401 and "disabled" not in r.content:
                     print(url, r.status_code)
-            
+
             elif attrib_name == "google_api_key" or attrib_name == "google_map_keys":
                 key = child.text
-                for _,v in config['URLs']:
+                for _, v in config["URLs"]:
                     url = v + key
                     r = requests.get(url)
-                    if r.status_code != 403 and "API project is not authorized" not in r.content:
+                    if (
+                        r.status_code != 403
+                        and "API project is not authorized" not in r.content
+                    ):
                         print(url, r.status_code)
 
 
@@ -98,12 +102,11 @@ def main(directory: str, config_file: str):
         config_file (str): path to the config file
     """
     if path.isdir(directory) and path.exists(config_file):
-        with open(config_file, 'r') as f:
+        with open(config_file, "r") as f:
             config = json.load(f)
 
-    manifest_path = path.join(directory, config['paths']['manifest'])
-    strings_path = path.join(directory, config['paths']['strings'])
-
+    manifest_path = path.join(directory, config["paths"]["manifest"])
+    strings_path = path.join(directory, config["paths"]["strings"])
 
     if path.isfile(manifest_path):
         tree = ET.parse(manifest_path)
@@ -119,4 +122,3 @@ if __name__ == "__main__":
 
     if args.dir and args.config:
         main(args.dir, args.config)
-
