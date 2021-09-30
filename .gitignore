@@ -4,3 +4,7 @@
 testing/
 target/
 testingapp/
+slicer-dir/
+*.exe
+*.bak
+*.yml
