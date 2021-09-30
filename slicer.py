@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 import argparse
 from os import path
+import requests
 import json
 
 
@@ -62,6 +63,32 @@ def process_manifest(tree):
             if activity:
                 print(activity)
 
+def find_keys(strings_path: str, config):
+    """Find the api keys in strings.xml and AndroidManifest.xml
+
+    Args:
+        strings_path (str): path to the strings.xml file
+        config (json): JSON object of the config file
+    """
+
+    values = ET.parse(strings_path)
+    for child in values.iter():
+        if "name" in child.attrib:
+            attrib_name = child.attrib['name']
+            if attrib_name == "firebase_database_url":
+                url = child.text + "/.json"
+                r = requests.get(url)
+                if r.status_code != 401 and "disabled" not in r.content:
+                    print(url, r.status_code)
+            
+            elif attrib_name == "google_api_key" or attrib_name == "google_map_keys":
+                key = child.text
+                for _,v in config['URLs']:
+                    url = v + key
+                    r = requests.get(url)
+                    if r.status_code != 403 and "API project is not authorized" not in r.content:
+                        print(url, r.status_code)
+
 
 def main(directory: str, config_file: str):
     """Drive the whole program
@@ -75,9 +102,13 @@ def main(directory: str, config_file: str):
             config = json.load(f)
 
     manifest_path = path.join(directory, config['paths']['manifest'])
+    strings_path = path.join(directory, config['paths']['strings'])
+
+
     if path.isfile(manifest_path):
         tree = ET.parse(manifest_path)
         process_manifest(tree)
+        find_keys(strings_path, config)
 
 
 if __name__ == "__main__":
@@ -88,3 +119,4 @@ if __name__ == "__main__":
 
     if args.dir and args.config:
         main(args.dir, args.config)
+
