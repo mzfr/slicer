@@ -124,7 +124,7 @@ def main(directory: str, config_file: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="pubg ranking for all servers")
+        description="Slicer")
     parser.add_argument("-d", "--dir", help="path to the jadx directory")
     parser.add_argument(
         "-c", "--config", help="path to the config file in json format")
