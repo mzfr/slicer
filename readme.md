@@ -16,7 +16,6 @@ __Note__: The APK has to be extracted via `jadx` or `apktool`.
 - [Summary](#summary)
 - [Features](#features)
 - [Installation](#installation)
-  - [Arch Linux](#arch-linux)
 - [Usage](#usage)
 - [Usage Example](#usage-example)
 - [Acknowledgements and Credits](#acknowledgements-and-credits)
@@ -66,28 +65,13 @@ I think that a tool like grep or ripgrep would be much faster to search through 
 
 # Installation
 
-__NOTE__: I'll be rewriting this tool in python so its possible that either some error occurs in the go version or you are not able to install it.
-
-You can download the binary from the [release](https://github.com/mzfr/slicer/releases) page. Also if you want you can clone this repository and build the binary yourself.
-
-If you have `go` compiler installed then you can use `go get github.com/mzfr/slicer`.
-
-__NOTE__: Slicer uses `config.yml` file. So either have a file named `config.yml` in your current working directory or make a directory
-named `.slicer` in your `$HOME` and then place the `config.yml` file there.
-
-## Arch Linux
-
-`slicer` can be installed from available [AUR packages](https://aur.archlinux.org/packages/?O=0&SeB=nd&K=A+tool+to+automate+the+boring&outdated=&SB=n&SO=a&PP=50&do_Search=Go) using an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers). For example,
+* Clone this repository
 
 ```
-yay -S slicer
+git clone https://github.com/mzfr/slicer
 ```
-
-If you prefer, you can clone the [AUR packages](https://aur.archlinux.org/packages/?O=0&SeB=nd&K=A+tool+to+automate+the+boring&outdated=&SB=n&SO=a&PP=50&do_Search=Go) and then compile them with [makepkg](https://wiki.archlinux.org/index.php/Makepkg). For example,
-
-```
-git clone https://aur.archlinux.org/slicer.git && cd slicer && makepkg -si
-```
+* `cd slicer`
+* Now you can run it: `python3 slicer.py -h`
 
 # Usage
 
@@ -103,7 +87,6 @@ Options:
 
   -d, --dir             path to jadx output directory
   -o, --output          Name of the output file(not implemented)
- -nb, --no-banner       Don't Show Banner
 ```
 
 I have not implemented the `output` flag yet because I think if you can redirect slicer output to a yaml file it will a proper format.
@@ -112,16 +95,9 @@ I have not implemented the `output` flag yet because I think if you can redirect
 
 * Extract information from the APK and display it on the screen.
 
+```bash
+python3 slicer.py -d path/to/extact/apk -c config.json
 ```
-slicer -d path/to/extact/apk
-```
-
-* Extract information and store in a yaml file:
-
-```
-slicer -d path/to/extracted/apk -nb=false > name.yaml
-```
-__If you plan to use if for Bug bounty or anything similar it's better to store in some file__
 
 # Acknowledgements and Credits
 
